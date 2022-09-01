@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>event loop</title>
+  </head>
+  <body></body>
+  <script>
+    console.log('script start');
+
+    async function async1() {
+      await async2();
+      console.log('async1');
+    }
+
+    // 微任务
+    async function async2() {
+      console.log('async2');
+    }
+
+    async1();
+
+    // 宏任务
+    setTimeout(() => {
+      console.log('setTimeout');
+    }, 0);
+
+    // 微任务
+    new Promise((resolve) => {
+      console.log('Promise');
+      resolve(); // 此处不加resolve，永远执行不到后续
+    })
+      .then(() => {
+        console.log('Promise1');
+      })
+      .then(() => {
+        console.log('Promise2');
+      });
+
+    console.log('script end');
+
+    new Promise((resolve) => {
+      resolve(1);
+      Promise.resolve().then(() => console.log(2));
+      console.log(4);
+    }).then((t) => console.log(t));
+    console.log(3);
+
+    // 旧版结果，async1处打印有争议。最后再所有微任务执行后再输出，即在Promise2之后
+
+    // 新版结果 优先本轮微任务，后顺序执行 后执行其他微任务 最终执行宏任务
+    // script start、 async2 、Promise 、script start、async1、 Promise1、 Promise2 、setTimeout
+  </script>
+</html>

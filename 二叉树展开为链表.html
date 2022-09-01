@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flatten-binary-tree-to-linked-list - 二叉树展开为链表</title>
+  </head>
+  <body></body>
+  <script>
+    /**
+     * 给你二叉树的根结点 root ，请你将它展开为一个单链表：
+     * 展开后的单链表应该同样使用 TreeNode ，其中 right 子指针指向链表中下一个结点，而左子指针始终为 null 。
+     * 展开后的单链表应该与二叉树 先序遍历 顺序相同。
+
+     * 示例 1：
+     * 输入：root = [1,2,5,3,4,null,6]
+     * 输出：[1,null,2,null,3,null,4,null,5,null,6]
+
+     * 示例 2：
+     * 输入：root = []
+     * 输出：[]
+    
+     * 示例 3：
+     * 输入：root = [0]
+     * 输出：[0]
+     */
+
+    /**
+     * Definition for a binary tree node.
+     * function TreeNode(val, left, right) {
+     *     this.val = (val===undefined ? 0 : val)
+     *     this.left = (left===undefined ? null : left)
+     *     this.right = (right===undefined ? null : right)
+     * }
+     */
+
+    /**
+     * 思路一：递归思路，将左子树及右子树都改为链表形式，最后将右子树拼到左子树之后，用左子树覆盖到root右侧
+     * @param {TreeNode} root
+     * @return {void} Do not return anything, modify root in-place instead.
+     * 执行用时：52 ms, 在所有 JavaScript 提交中击败了99.79%的用户
+     * 内存消耗：42.9 MB, 在所有 JavaScript 提交中击败了93.51%的用户
+     */
+    var flatten = function (root) {
+      if (root === null) return;
+
+      flatten(root.left);
+      flatten(root.right);
+
+      const left = root.left;
+      const right = root.right;
+
+      // 将右子树拼到左子树之后，如果左子树是null,则无需处理
+      if (left !== null) {
+        let endLeftNode = left;
+        while (endLeftNode.right !== null) {
+          endLeftNode = endLeftNode.right;
+        }
+        endLeftNode.right = right;
+
+        // 将整个左子树加到root右侧
+        root.left = null;
+        root.right = left;
+      } else {
+        root.left = null;
+      }
+    };
+
+    /**
+     * 思路二：递归思路，将左子树及右子树都改为链表形式，最后将左子树拼到根节点之后，再找到叶子右节点，将右子树拼接其后
+     * @param {TreeNode} root
+     * @return {void} Do not return anything, modify root in-place instead.
+     * 性能略低于上面
+     */
+    var flatten2 = function (root) {
+      if (root === null) return;
+
+      flatten(root.left);
+      flatten(root.right);
+
+      const left = root.left;
+      const right = root.right;
+
+      // 将整个左子树加到root右侧
+      root.left = null;
+      root.right = left;
+
+      // 将右子树拼接到root最后右节点上
+      let endRight = root;
+      while (endRight.right !== null) {
+        endRight = endRight.right;
+      }
+      endRight.right = right;
+    };
+  </script>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>最长递增子序列 longest-increasing-subsequence</title>
+  </head>
+  <body></body>
+  <script>
+    // leetcode地址： https://leetcode.cn/problems/longest-increasing-subsequence/
+    //   给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+
+    // 子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+    // 示例 1： 输入：nums = [10,9,2,5,3,7,101,18] 输出：4 解释：最长递增子序列是 [2,3,7,101]，因此长度为 4 。
+
+    // 示例 2： 输入：nums = [0,1,0,3,2,3] 输出：4
+
+    // 示例 3： 输入：nums = [7,7,7,7,7,7,7] 输出：1
+
+    // 提示：
+    // 1 <= nums.length <= 2500
+    // -10^4 <= nums[i] <= 104
+
+    // 时间复杂度降低到 O(n log(n))
+
+    function maxLenStr(nums) {
+      if (!nums) return 0;
+      if (nums.length === 1) return 1;
+
+      const win = [];
+      let maxLen = 0;
+      let leftIndex = 0;
+      let rightIndex = 0;
+
+      while (rightIndex < nums.length) {
+        let num = nums[rightIndex];
+
+        // 窗口左闭右开  右指针优先移动，不满足递增时，移动左指针, 循环遍历，若
+        rightIndex++;
+        if (!win.includes(num)) {
+          win.push(num);
+        }
+
+        while (num < win[leftIndex]) {
+          // 如果当前值小于窗口最左侧值，，，，？？？   可以跳过中间的。
+          maxLen = win.length;
+          leftIndex++;
+          win.unshift(win[leftIndex]);
+        }
+      }
+    }
+
+    /**
+     * 动态规划解法，时间复杂度 O(N^2)；难想到的是利用二分查找，时间复杂度是 O(NlogN)
+     * @param {Array} nums 一个整数数组 nums
+     * @return {number} 其中最长严格递增子序列的长度
+     */
+    // 备份已存在数据
+
+    /**
+        dp[i] 表示以 nums[i] 这个数结尾的最长递增子序列的长度。i表示数组的下标，到达此下标时，最长严格递增子序列的长度。
+
+        dp[n] = {
+          1, n = 0
+          max{dp[n], dp[n-1]+1},n > 0
+        }
+    */
+
+    // 自顶向下实现，穷举；循环遍历，并记录每个结果
+    // 执行用时：172 ms, 在所有 JavaScript 提交中击败了 52.90% 的用户
+    // 内存消耗：42.6 MB, 在所有 JavaScript 提交中击败了 75.31% 的用户
+    var lengthOfLIS = function (nums) {
+      let maxLen = 0;
+
+      // dp先定义好，结果集。每个结果至少有自身1个值，默认填充1
+      const dp = new Array(nums.length).fill(1);
+
+      // 最大解就nums.length，状态转移方程：每个
+      for (let i = 0; i < nums.length; i++) {
+        // 此时，即确认dp当前位中，前面是否存在更优解
+        for (let j = 0; j < i; j++) {
+          if (nums[i] > nums[j]) {
+            dp[i] = Math.max(dp[i], dp[j] + 1);
+          }
+        }
+
+        // 拿到当前最大递增子序列
+        maxLen = Math.max(maxLen, dp[i]);
+      }
+
+      return maxLen;
+    };
+
+    // 通过贪心和二分查找方式实现。patience sorting（耐心排序）字牌游戏解法，通过最左边的堆尾上只能放小于等于自己的值，优先放在第一个满足的左侧堆上，否则就新加一堆。堆长即为最大解
+    // 即左小右大，右边新堆之所以出现，就是因为创建新堆的值比前面的堆尾都要大，自然就能形成递增序列。
+
+    // 执行用时：88 ms, 在所有 JavaScript 提交中击败了 80.66% 的用户
+    // 内存消耗：43.1 MB, 在所有 JavaScript 提交中击败了 13.82% 的用户
+    var lengthOfLISByBinarySearch = function (nums) {
+      let piles = 0;
+      const top = [];
+
+      for (let i = 0; i < nums.length; i++) {
+        let poker = nums[i];
+
+        // 根据左边界进行二分查找,采用左闭右闭, 越界时 [left, left - 1] 即 left = right + 1;
+        let left = 0,
+          right = piles;
+        while (left <= right) {
+          // mid 必须是整数，向下取整
+          let mid = parseInt((left + right) / 2);
+          // 此处必须是top中存储的值比对，否则就不会对应。始终无法递增堆 piles
+          if (top[mid] < poker) {
+            // 中间值小于当前值，收左边
+            left = mid + 1;
+          } else {
+            // 中间值大于当前值，收右边；或相等，
+            right = mid - 1;
+          }
+        }
+
+        // 如果最终左侧指针与堆大小相同，即没有符合可以存放的堆，那么将堆大小加1
+        if (left === piles) piles++;
+        // 循环结束后，将left 推入堆中
+        top[left] = poker;
+      }
+
+      console.log(top, '=======最终推入堆数组', piles);
+
+      return piles;
+    };
+
+    const nums = [10, 9, 2, 5, 3, 7, 101, 18];
+    const nums2 = [0, 1, 0, 3, 2, 3];
+    const nums3 = [7, 7, 7, 7, 7, 7, 7];
+
+    console.log(lengthOfLIS(nums));
+    console.log(lengthOfLIS(nums2));
+    console.log(lengthOfLIS(nums3));
+
+    console.log(lengthOfLISByBinarySearch(nums));
+    console.log(lengthOfLISByBinarySearch(nums2));
+    console.log(lengthOfLISByBinarySearch(nums3));
+  </script>
+</html>

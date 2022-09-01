@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>maximum-depth-of-binary-tree - 二叉树的最大深度</title>
+  </head>
+  <body></body>
+  <script>
+    /**
+     * 给定一个二叉树，找出其最大深度。、
+     * 二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+     * 说明: 叶子节点是指没有子节点的节点。
+
+     * 示例：
+     * 给定二叉树 [3,9,20,null,null,15,7]，回它的最大深度 3 。
+     */
+
+    /**
+     * Definition for a binary tree node.
+     * function TreeNode(val, left, right) {
+     *     this.val = (val===undefined ? 0 : val)
+     *     this.left = (left===undefined ? null : left)
+     *     this.right = (right===undefined ? null : right)
+     * }
+     */
+
+    /**
+     * 方法一：动态规划思路
+     * 执行用时：68 ms, 在所有 JavaScript 提交中击败了61.36%的用户
+     * 内存消耗：43.6 MB, 在所有 JavaScript 提交中击败了76.52%的用户
+     * @param {TreeNode} root
+     * @return {number}
+     */
+    const maxDepth = function (root) {
+      // 求二叉树最大深度，即需要得知左子树和右子树的最大深度，当前深度+1即可？ 后序遍历
+      if (root === null) {
+        return 0;
+      }
+      let maxLeft = maxDepth(root.left);
+      let maxRight = maxDepth(root.right);
+
+      return Math.max(maxLeft, maxRight) + 1;
+    };
+
+    console.log(maxDepth([3, 9, 20, null, null, 15, 7]));
+
+    function TreeNode(val, left, right) {
+      this.val = val === undefined ? 0 : val;
+      this.left = left === undefined ? null : left;
+      this.right = right === undefined ? null : right;
+    }
+
+    /**
+     * 方法二：遍历思路-回溯算法思路
+     * 执行用时：68 ms, 在所有 JavaScript 提交中击败了61.36%的用户
+     * 内存消耗：43.9 MB, 在所有 JavaScript 提交中击败了32.31%的用户
+     * @param {TreeNode} root
+     * @return {number}
+     */
+    let res = 0;
+    let depth = 0;
+    const maxDepthBack1 = function (root) {
+      res = 0;
+      depth = 0;
+
+      traverse(root);
+      return res;
+    };
+
+    const traverse = function (root) {
+      if (root === null) {
+        return;
+      }
+
+      depth++;
+      // 如果到了叶子节点则更新最大深度
+      if (root.left === null && root.right === null) {
+        res = Math.max(res, depth);
+      }
+      traverse(root.left);
+      traverse(root.right);
+      depth--;
+    };
+
+    /**
+     * 方法三：遍历思路-回溯算法思路
+     * 执行用时：64 ms, 在所有 JavaScript 提交中击败了80.08%的用户
+     * 内存消耗：44.2 MB, 在所有 JavaScript 提交中击败了10.96%的用户
+     * @param {TreeNode} root
+     * @return {number}
+     */
+    const maxDepthBack2 = function (root) {
+      let res = 0;
+      let depth = 0;
+
+      const traverse = function (root) {
+        if (root === null) {
+          return;
+        }
+
+        depth++;
+        // 如果到了叶子节点则更新最大深度
+        if (root.left === null && root.right === null) {
+          res = Math.max(res, depth);
+        }
+        traverse(root.left);
+        traverse(root.right);
+        depth--;
+      };
+
+      traverse(root);
+      return res;
+    };
+  </script>
+</html>

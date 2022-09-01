@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>binary-tree-preorder-traversal - 二叉树的前序遍历</title>
+  </head>
+  <body>
+    nihaoa
+  </body>
+  <script>
+    /**
+     * 二叉树的前序遍历
+     * 给你二叉树的根节点 root ，返回它节点值的 前序 遍历。
+
+     * 示例1：
+     * 输入：root = [1,null,2,3]
+     * 输出：[1,2,3]
+
+     * 示例2：
+     * 输入：root = []
+     * 输出：[]
+
+     * 示例3:
+     * 输入：root = [1]
+     * 输出：[1]
+
+     * 示例4：
+     * 输入：root = [1,2]
+     * 输出：[1,2]
+
+     * 示例5：
+     * 输入：root = [1,null,2]
+     * 输出：[1,2]
+     */
+
+    /**
+     * Definition for a binary tree node.
+     * function TreeNode(val, left, right) {
+     *     this.val = (val===undefined ? 0 : val)
+     *     this.left = (left===undefined ? null : left)
+     *     this.right = (right===undefined ? null : right)
+     * }
+     */
+
+    /**
+     * 方法一：回溯算法思路  ***** 更优解
+     * 执行用时：48 ms, 在所有 JavaScript 提交中击败了99.01%的用户
+     * 内存消耗：40.9 MB, 在所有 JavaScript 提交中击败了92.72%的用户
+     * @param {TreeNode} root
+     * @return {number[]}
+     */
+    var preorderTraversal = function (root) {
+      const arr = [];
+      // 递归前序遍历
+
+      const traverse = function (root) {
+        if (root === null) return;
+
+        arr.push(root.val);
+        traverse(root.left);
+        traverse(root.right);
+      };
+
+      traverse(root);
+
+      return arr;
+    };
+
+    /**
+     * 方法二：动态规划思路 - 前序遍历
+     * 执行用时：52 ms, 在所有 JavaScript 提交中击败了95.92%的用户
+     * 内存消耗：41.7 MB, 在所有 JavaScript 提交中击败了5.07%的用户
+     * @param {TreeNode} root
+     * @return {number[]}
+     */
+    var preorderTraversal = function (root) {
+      // 递归前序遍历
+      const res = [];
+      if (root === null) return [];
+
+      res.push(root.val);
+      res.push(...preorderTraversal(root.left));
+      res.push(...preorderTraversal(root.right));
+
+      return res;
+    };
+  </script>
+</html>

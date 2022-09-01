@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>每周一练</title>
+  </head>
+  <body></body>
+  <script>
+    // 提供以下两个链表：
+    // 4 -> 5 -> 7 -> 8 与 3 -> 5 -> 8，每一个链表代表一个相反顺序的数字，因此：
+    // 4 -> 5 -> 7 -> 8代表：8754
+    // 3 -> 5 -> 8代表：853
+    // 请编写一个方法来将两个数字相加并将其作为另一个链表返回？
+    // list1: 4 -> 5 -> 7 -> 8
+    // list2: 3 -> 5 -> 8
+
+    // 应该返回：7 -> 1 -> 6 -> 9
+    // 8764 + 853 = 9617
+
+    // Available Data Structures
+    function LinkedListNode(val) {
+      this.val = val;
+      this.next = null;
+    }
+
+    var list2 = new LinkedListNode(3);
+    var nodes1 = [4, 5, 6, 7, 8, 9, 10];
+    createNodes(list2, nodes1);
+
+    var list1 = new LinkedListNode(1);
+    var nodes2 = [2, 3, 4, 5, 6];
+    createNodes(list1, nodes2);
+
+    var list3 = new LinkedListNode(4);
+    var nodes3 = [6, 7, 8];
+    createNodes(list3, nodes3);
+
+    var list4 = new LinkedListNode(3);
+    var nodes4 = [5, 8];
+    createNodes(list4, nodes4);
+
+    function createNodes(head, nodes) {
+      for (let i = 0; i < nodes.length; i++) {
+        var newNode = new LinkedListNode(nodes[i]);
+        head.next = newNode;
+        head = head.next;
+      }
+    }
+
+    /*
+     *  先遍历一个链表，后遍历另外一个长链表
+     * @param {LinkedListNode} list1
+     * @param {LinkedListNode} list2
+     * @return {LinkedListNode}
+     */
+
+    function addLLNums(list1, list2) {
+      // add list1 and list2
+      var result = (curNode = new LinkedListNode(0)),
+        steps = 0,
+        count = 0;
+      while (list1.next) {
+        count = list1.val + list2.val + steps;
+        steps = parseInt(count / 10);
+        curNode.val = count % 10;
+        curNode.next = new LinkedListNode(0);
+        curNode = curNode.next;
+        list1 = list1.next;
+
+        if (list2.next) {
+          list2 = list2.next;
+        } else {
+          // 只有list1有长度
+          list2.val = 0;
+        }
+      }
+
+      // list2还未遍历完
+      while (list2.next) {
+        // 只有list1有长度
+        count = list1.val + list2.val + steps;
+        steps = parseInt(count / 10);
+        curNode.val = count % 10;
+        curNode.next = new LinkedListNode(0);
+        curNode = curNode.next;
+        list1.val = 0;
+
+        list2 = list2.next;
+      }
+
+      // list1或list2最后一个值
+      if (list1.val || list2.val) {
+        count = list1.val + list2.val + steps;
+        steps = parseInt(count / 10);
+        curNode.val = count % 10;
+      }
+
+      // 最后一位计算还可能进位
+      if (steps) {
+        curNode.next = new LinkedListNode(0);
+        curNode = curNode.next;
+        curNode.val = steps;
+      }
+
+      return result;
+    }
+
+    console.log(addLLNums2(list1, list2));
+    // console.log(addLLNums2(list3, list4));
+
+    // 方法二：直接同时遍历两个链表，此方法更优
+    function addLLNums2(list1, list2) {
+      var result = (curNode = new LinkedListNode(0)),
+        steps = 0,
+        count = 0;
+      while (list1 || list2) {
+        count = steps;
+        if (list1) {
+          count += list1.val;
+          list1 = list1.next;
+        }
+
+        if (list2) {
+          count += list2.val;
+          list2 = list2.next;
+        }
+
+        steps = parseInt(count / 10);
+        curNode.val = count % 10;
+        if (list1 || list2) {
+          curNode.next = new LinkedListNode(0);
+          curNode = curNode.next;
+        }
+      }
+
+      // 最后一位计算还可能进位
+      if (steps) {
+        curNode.next = new LinkedListNode(0);
+        curNode = curNode.next;
+        curNode.val = steps;
+      }
+
+      return result;
+    }
+  </script>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>算法 - 从前序与中序遍历序列构造二叉树</title>
+  </head>
+
+  <body>
+    <div id="app"></div>
+    <script>
+      // 头部注释快捷键为：mac：ctrl+cmd+i
+      // 函数注释快捷键为：mac：ctrl+cmd+t
+      // 函数注释光标移动到下一行，快速添加函数参数描述 mac: cmd+y
+
+      // 给定两个整数数组 preorder 和 inorder ，其中 preorder 是二叉树的先序遍历， inorder 是同一棵树的中序遍历，请构造二叉树并返回其根节点。
+
+      // 示例 1:
+      // 输入: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+      // 输出: [3,9,20,null,null,15,7]
+      // 示例 2:
+      // 输入: preorder = [-1], inorder = [-1]
+      // 输出: [-1]
+
+      /**
+       * Definition for a binary tree node.
+       * function TreeNode(val, left, right) {
+       *     this.val = (val===undefined ? 0 : val)
+       *     this.left = (left===undefined ? null : left)
+       *     this.right = (right===undefined ? null : right)
+       * }
+       */
+
+      /**
+       * 方法一：更优解
+       * @param {number[]} preorder
+       * @param {number[]} inorder
+       * @return {TreeNode}
+       *
+       * 执行用时： 76 ms , 在所有 JavaScript 提交中击败了 90.50% 的用户
+       * 内存消耗： 43.4 MB , 在所有 JavaScript 提交中击败了 95.27% 的用户
+       */
+
+      function TreeNode(val, left, right) {
+        this.val = val === undefined ? 0 : val;
+        this.left = left === undefined ? null : left;
+        this.right = right === undefined ? null : right;
+      }
+
+      var buildTree1 = function (preorder, inorder) {
+        // 根据前序得到根节点再根据中序划分左右。若无左右子树用null填充
+
+        return build(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
+
+        function build(preorder, preStart, perEnd, inorder, inStart, inEnd) {
+          if (preStart > perEnd) return null;
+
+          // 获取根节点
+          const rootVal = preorder[preStart];
+
+          // 找到中序遍历中根节点位置，划分左右子树
+          let index = 0;
+          for (let i = inStart; i <= inEnd; i++) {
+            const ele = inorder[i];
+            if (rootVal === ele) {
+              index = i;
+              break;
+            }
+          }
+
+          const root = new TreeNode(rootVal);
+
+          // 构造左右子树
+          let leftSize = index - inStart;
+          root.left = build(preorder, preStart + 1, preStart + leftSize, inorder, inStart, index - 1);
+          root.right = build(preorder, preStart + leftSize + 1, perEnd, inorder, index + 1, inEnd);
+
+          return root;
+        }
+      };
+
+      /**
+       * 方法二，循环优化，用时无优化，可忽略，方法一更优
+       * @param {number[]} preorder
+       * @param {number[]} inorder
+       * @return {TreeNode}
+       *
+       * 执行用时： 76 ms , 在所有 JavaScript 提交中击败了 90.50% 的用户
+       * 内存消耗： 44 MB , 在所有 JavaScript 提交中击败了 81.14%
+       */
+      const valToIndex = {};
+      var buildTree = function (preorder, inorder) {
+        // 根据前序得到根节点再根据中序划分左右。若无左右子树用null填充
+        for (let i = 0; i < inorder.length; i++) {
+          valToIndex[inorder[i]] = i;
+        }
+
+        return build(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
+
+        function build(preorder, preStart, perEnd, inorder, inStart, inEnd) {
+          if (preStart > perEnd) return null;
+
+          // 获取根节点
+          const rootVal = preorder[preStart];
+
+          // 找到中序遍历中根节点位置，划分左右子树
+          // 构造左右子树
+          const root = new TreeNode(rootVal);
+          const index = valToIndex[rootVal];
+          const leftSize = index - inStart;
+
+          root.left = build(preorder, preStart + 1, preStart + leftSize, inorder, inStart, index - 1);
+          root.right = build(preorder, preStart + leftSize + 1, perEnd, inorder, index + 1, inEnd);
+
+          return root;
+        }
+      };
+      let preorder = [1, 2, 3],
+        inorder = [3, 2, 1];
+      console.log(buildTree(preorder, inorder));
+    </script>
+  </body>
+</html>

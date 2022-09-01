@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>diameter-of-binary-tree - 二叉树的直径</title>
+  </head>
+  <body></body>
+  <script>
+    /**
+     * 给定一棵二叉树，你需要计算它的直径长度。一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过也可能不穿过根结点。
+
+     * 示例 :
+     * 给定二叉树
+
+           1
+          / \
+         2   3
+        / \     
+       4   5    
+     * 返回 3, 它的长度是路径 [4,2,1,3] 或者 [5,2,1,3]。
+     *  注意：两结点之间的路径长度是以它们之间边的数目表示。
+     */
+
+    /**
+     * Definition for a binary tree node.
+     * function TreeNode(val, left, right) {
+     *     this.val = (val===undefined ? 0 : val)
+     *     this.left = (left===undefined ? null : left)
+     *     this.right = (right===undefined ? null : right)
+     * }
+     */
+
+    /**
+     * 方案一：递归方法，后序遍历。每次递归当前根节点的左子树和右子树的最大深度
+     * 遇到子树问题，首先想到的是给函数设置返回值，然后在后序位置做文章。
+     * @param {TreeNode} root
+     * @return {number}
+     * 执行用时：60 ms, 在所有 JavaScript 提交中击败了94.50%的用户
+     * 内存消耗：44.4 MB, 在所有 JavaScript 提交中击败了50.71%的用户
+     */
+
+    var diameterOfBinaryTree = function (root) {
+      let res = 0;
+
+      var traverse = function (root) {
+        if (root === null) return 0;
+
+        let leftMaxLen = traverse(root.left);
+        let rightMaxLen = traverse(root.right);
+        // 后续遍历计算最大直径，即离开当前节点时再计算最大深度
+        res = Math.max(res, leftMaxLen + rightMaxLen);
+        return 1 + Math.max(leftMaxLen, rightMaxLen); // 返回当前节点最长路径
+      };
+
+      traverse(root);
+      return res;
+    };
+  </script>
+</html>
