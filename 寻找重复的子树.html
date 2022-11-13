@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>寻找重复的子树 - find-duplicate-subtrees</title>
+  </head>
+  <body></body>
+  <script>
+    /**
+     * Definition for a binary tree node.
+     * function TreeNode(val, left, right) {
+     *     this.val = (val===undefined ? 0 : val)
+     *     this.left = (left===undefined ? null : left)
+     *     this.right = (right===undefined ? null : right)
+     * }
+     */
+
+    /**
+     * 方法一：更优-后序遍历方式，map缓存,set记录
+     * @param {TreeNode} root
+     * @return {TreeNode[]}
+     * 思路：通过后序遍历拿到所有叶子节点后，拼接左右子child值及自身值，并从缓存判断是否已添加
+     * 执行用时：68 ms, 在所有 JavaScript 提交中击败了99.65%的用户
+     * 内存消耗：46.2 MB, 在所有 JavaScript 提交中击败了95.02%的用户
+     */
+    var findDuplicateSubtrees1 = function (root) {
+      const memo = new Map(); // 结构为 key->拼接好的 左右跟, val 为数组[root, num值]
+      const res = new Set(); // 记录重复项
+      let idx = 0;
+      const traverse = (root) => {
+        if (!root) {
+          return '#';
+        }
+
+        let val = traverse(root.left) + ',' + traverse(root.right) + ',' + root.val;
+
+        if (memo.has(val)) {
+          const curNode = memo.get(val); // 获取到记录结果
+          res.add(curNode[0]);
+          return curNode[1];
+        } else {
+          memo.set(val, [root, ++idx]); // 如果历史记录中不存在，则新增，idx的作用是 减少memo的数据缓存
+          return idx;
+        }
+      };
+      traverse(root);
+      return [...res];
+    };
+
+    /**
+     * 方法二：后序遍历方式-memo缓存所有结果使用对象，耗时
+     * @param {TreeNode} root
+     * @return {TreeNode[]}
+     * 思路：通过后序遍历拿到所有叶子节点后，拼接左右子child值及自身值，并从缓存判断是否已添加
+     * 执行用时：128 ms, 在所有 JavaScript 提交中击败了23.30%的用户
+     * 内存消耗：59.9 MB, 在所有 JavaScript 提交中击败了7.15%的用户
+     */
+    var findDuplicateSubtrees = function (root) {
+      const memo = {}; // 存储 拼接的 左子树值+右子树组+root值，并以对象形式，判断val=1时，经当前节点推入res中
+      const res = []; // 存储返回值
+
+      traverse(root);
+      return res;
+
+      function traverse(root) {
+        if (!root) return null;
+
+        let leftVal = traverse(root.left);
+        let rightVal = traverse(root.right);
+        let rootVal = leftVal + ',' + rightVal + ',' + root.val;
+
+        // 推入缓存
+        memo[rootVal] = memo[rootVal] ? memo[rootVal] + 1 : 1;
+
+        if (memo[rootVal] === 2) {
+          res.unshift(root);
+        }
+
+        return rootVal;
+      }
+    };
+
+    function TreeNode(val) {
+      this.val = val;
+      this.left = this.right = null;
+    }
+
+    // root = [2,2,2,3,null,3,null]
+    const a = new TreeNode(6);
+    const b = (a.left = new TreeNode(8));
+    const c = (a.right = new TreeNode(8));
+    b.left = new TreeNode(9);
+    c.left = new TreeNode(9);
+
+    console.log(findDuplicateSubtrees1(a));
+  </script>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>从中序与后序遍历序列构造二叉树 - construct-binary-tree-from-inorder-and-postorder-traversal</title>
+  </head>
+  <body></body>
+  <script>
+    // 给定两个整数数组 inorder 和 postorder ，其中 inorder 是二叉树的中序遍历， postorder 是同一棵树的后序遍历，请你构造并返回这颗 二叉树 。
+    // 示例 1:
+    // 输入：inorder = [9,3,15,20,7], postorder = [9,15,7,20,3]
+    // 输出：[3,9,20,null,null,15,7]
+    // 示例 2:
+    // 输入：inorder = [-1], postorder = [-1]
+    // 输出：[-1]
+
+    /**
+     * Definition for a binary tree node.
+     * function TreeNode(val, left, right) {
+     *     this.val = (val===undefined ? 0 : val)
+     *     this.left = (left===undefined ? null : left)
+     *     this.right = (right===undefined ? null : right)
+     * }
+     */
+
+    function TreeNode(val, left, right) {
+      this.val = val === undefined ? 0 : val;
+      this.left = left === undefined ? null : left;
+      this.right = right === undefined ? null : right;
+    }
+
+    /**
+     * 方法一：通过后序结构找到根节点，再根据根节点划分中序遍历结果。获取左侧树长度。
+     * @param {number[]} inorder
+     * @param {number[]} postorder
+     * @return {TreeNode}
+     *
+     * 执行用时：80 ms, 在所有 JavaScript 提交中击败了83.20%的用户
+     * 内存消耗：43.7 MB, 在所有 JavaScript 提交中击败了87.34%的用户
+     */
+    var buildTree = function (inorder, postorder) {
+      return build(inorder, 0, inorder.length - 1, postorder, 0, postorder.length - 1);
+
+      function build(inorder, inStart, inEnd, postorder, postStart, postEnd) {
+        if (inStart > inEnd) return null;
+        // 根据中序与后序遍历构造二叉树，中序：左根右  后序：左右根  如何找到根？ 即后序的最后一个节点即为根节点
+        const rootVal = postorder[postEnd];
+
+        // 找到中序遍历中根节点位置，进行左右分割
+        let index = 0;
+        for (let i = inStart; i <= inEnd; i++) {
+          if (inorder[i] === rootVal) {
+            index = i;
+            break;
+          }
+        }
+
+        let leftSize = index - inStart;
+        let root = new TreeNode(rootVal);
+        root.left = build(inorder, inStart, index - 1, postorder, postStart, postStart + leftSize - 1);
+        root.right = build(inorder, index + 1, inEnd, postorder, postStart + leftSize, postEnd - 1);
+        return root;
+      }
+    };
+
+    const a = [9, 3, 15, 20, 7],
+      b = [9, 15, 7, 20, 3];
+    console.log(buildTree(a, b));
+  </script>
+</html>

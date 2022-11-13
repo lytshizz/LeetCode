@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>二叉树的序列化与反序列化 - serialize-and-deserialize-binary-tree</title>
+  </head>
+  <body></body>
+  <script>
+    // 序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+    // 请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+    // 提示: 输入输出格式与 LeetCode 目前使用的方式一致，详情请参阅 LeetCode 序列化二叉树的格式。你并非必须采取这种方式，你也可以采用其他的方法解决这个问题。
+    //
+    // 示例 1：
+    // 输入：root = [1,2,3,null,null,4,5]
+    // 输出：[1,2,3,null,null,4,5]
+
+    /**
+     * Definition for a binary tree node.
+     * function TreeNode(val) {
+     *     this.val = val;
+     *     this.left = this.right = null;
+     * }
+     */
+
+    /**
+     * Encodes a tree to a single string.
+     * 先序遍历，使用"-"分割转换为字符串
+     * 二叉树可以被序列化为一个字符串
+     *
+     * @param {TreeNode} root
+     * @return {string}
+     */
+    const serialize1 = function (root) {
+      const arr = [];
+
+      function toStr(root) {
+        if (!root) {
+          arr.push('');
+          return;
+        }
+        console.log(root);
+        arr.push(root.val);
+        toStr(root.left);
+        toStr(root.right);
+      }
+
+      toStr(root);
+      return arr.join('#');
+    };
+
+    /**
+     * Decodes your encoded data to tree.
+     * 解析先序遍历字符串结果
+     *
+     * @param {string} data
+     * @return {TreeNode}
+     */
+    const deserialize1 = function (data) {
+      if (!data) return null;
+
+      let arr;
+      if (typeof data === 'string') {
+        arr = data.split('#');
+      } else {
+        arr = data;
+      }
+      return toTree(arr);
+
+      function toTree(arr) {
+        let val = arr.shift();
+        if (!val) return null;
+
+        const root = new TreeNode(Number(val));
+        root.left = toTree(arr);
+        root.right = toTree(arr);
+
+        return root;
+      }
+    };
+
+    // 方法二：通过字符串拼接方式，并标记叶子节点
+    // 执行用时：96 ms, 在所有 JavaScript 提交中击败了92.84%的用户
+    // 内存消耗：51.7 MB, 在所有 JavaScript 提交中击败了75.92%的用户
+    const serialize = function (root) {
+      let str = '';
+      // 如果有当前节点，则赋值*累加，否则赋值叶子节点标识@
+      if (root) {
+        str = root.val;
+        str += '*' + serialize(root.left);
+        str += '*' + serialize(root.right);
+      } else {
+        str = '@';
+      }
+
+      return str;
+    };
+    const deserialize = function (data) {
+      // 从数组首位开始遍历
+      let i = 0;
+      const arr = data.split('*');
+
+      return toTree();
+
+      // 创建节点
+      function toTree() {
+        let val = arr[i++]; // 获取当前值，并获取后累加
+
+        // 如果当前是空或者叶子节点直接返回
+        if (val === undefined || val === '@') return null;
+
+        const root = new TreeNode(val);
+        root.left = toTree();
+        root.right = toTree();
+
+        return root;
+      }
+    };
+
+    /**
+     * Your functions will be called as such:
+     * deserialize(serialize(root));
+     */
+
+    function TreeNode(val) {
+      this.val = val;
+      this.left = this.right = null;
+    }
+
+    // root = [1, 2, 3, null, null, 4, 5];
+    const a = new TreeNode(1);
+    const b = (a.left = new TreeNode(2));
+    const c = (a.right = new TreeNode(3));
+    c.left = new TreeNode(4);
+    c.right = new TreeNode(5);
+
+    console.log(a);
+    console.log(serialize(a));
+    console.log(deserialize(serialize(a)), 'deserialize');
+
+    const d = new TreeNode(1);
+    const e = (d.left = new TreeNode(2));
+    d.right = new TreeNode(3);
+    e.right = new TreeNode(4);
+
+    console.log(d);
+    console.log(serialize(d));
+    console.log(deserialize(serialize(d)));
+  </script>
+</html>
