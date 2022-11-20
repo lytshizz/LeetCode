@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>计算右侧小于当前元素的个数 - count-of-smaller-numbers-after-self</title>
+  </head>
+  <body></body>
+  <script>
+    /** 计算右侧小于当前元素的个数
+    给你一个整数数组 nums ，按要求返回一个新数组 counts 。数组 counts 有该性质： counts[i] 的值是  nums[i] 右侧小于 nums[i] 的元素的数量。
+
+    示例 1：
+    输入：nums = [5,2,6,1]
+    输出：[2,1,1,0]
+    解释：
+    5 的右侧有 2 个更小的元素 (2 和 1)
+    2 的右侧仅有 1 个更小的元素 (1)
+    6 的右侧有 1 个更小的元素 (1)
+    1 的右侧有 0 个更小的元素
+    示例 2：
+    输入：nums = [-1]
+    输出：[0]
+    示例 3：
+    输入：nums = [-1,-1]
+    输出：[0,0]
+    */
+
+    /**
+     * @param {number[]} nums
+     * @return {number[]}
+     *
+     * 执行用时：312 ms, 在所有 JavaScript 提交中击败了86.03%的用户
+     * 内存消耗：75.9 MB, 在所有 JavaScript 提交中击败了37.12%的用户
+     */
+    var countSmaller = function (nums) {
+      // 使用归并排序方式，先递归二叉树，后续遍历中merge
+      const len = nums.length;
+      let temp = new Array(len); // 辅助数组
+      const count = new Array(len).fill(0);
+      const arr = new Array(len);
+      for (let i = 0; i < len; i++) {
+        arr[i] = { val: nums[i], id: i };
+      }
+
+      // 需要记录原始值及索引
+      traverse(arr, 0, len - 1);
+
+      /**
+       * @param {number[]} arr
+       * @param {number} low
+       * @param {number} high
+       * @return {number[]}
+       */
+      function traverse(arr, low, high) {
+        if (low === high) return;
+        let mid = parseInt((high + low) / 2);
+        traverse(arr, low, mid);
+        traverse(arr, mid + 1, high);
+
+        // 后序位置，将 arr[low..mid] 和 arr[mid+1..high] 这两个有序数组合并成一个有序数组
+        merge(arr, low, mid, high);
+      }
+
+      // 双指针方式  合并两个有序数组  如果当给arr[p]赋值为temp[i]时证明，其后小的数值为j-mid-1
+      function merge(arr, low, mid, high) {
+        // 优化给temp赋值重新排序后的值
+        for (let i = low; i <= high; i++) {
+          temp[i] = arr[i];
+        }
+
+        let i = low,
+          j = mid + 1;
+        for (let p = low; p <= high; p++) {
+          // 如果左边合并完了，p直接赋值右边的
+          if (i === mid + 1) {
+            arr[p] = temp[j++];
+          } else if (j === high + 1) {
+            // 如果右边合并完了，p直接赋值左边的
+            arr[p] = temp[i++];
+
+            // 如果p赋值i，证明其后有小于此值的情况 ，count更新
+            count[arr[p].id] += j - mid - 1;
+          } else if (temp[i].val > temp[j].val) {
+            // 如果i值大于j值，p赋值j
+            arr[p] = temp[j++];
+          } else {
+            // 如果i值小于j值，p赋值i
+            arr[p] = temp[i++];
+
+            // count更新
+            count[arr[p].id] += j - mid - 1;
+          }
+        }
+      }
+      return count;
+    };
+    let nums = [5, 2, 6, 1];
+    console.log(countSmaller(nums));
+  </script>
+</html>

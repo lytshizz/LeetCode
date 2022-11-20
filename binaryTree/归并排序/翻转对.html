@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>翻转对 - reverse-pairs</title>
+  </head>
+  <body></body>
+  <script>
+    /**
+     * 给定一个数组 nums ，如果 i < j 且 nums[i] > 2*nums[j] 我们就将 (i, j) 称作一个重要翻转对。
+     * 你需要返回给定数组中的重要翻转对的数量。
+
+     * 示例 1:
+     * 输入: [1,3,2,3,1]
+     * 输出: 2
+
+     * 示例 2:
+     * 输入: [2,4,3,5,1]
+     * 输出: 3
+     */
+
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     *
+     * 执行用时：140 ms, 在所有 JavaScript 提交中击败了99.14%的用户
+     * 内存消耗：52.4 MB, 在所有 JavaScript 提交中击败了55.17%的用户
+     */
+    var reversePairs = function (nums) {
+      const len = nums.length;
+      let temp = new Array(len); // 辅助数组
+      let count = 0;
+
+      // 需要记录原始值及索引
+      traverse(nums, 0, len - 1);
+
+      /**
+       * @param {number[]} nums
+       * @param {number} low
+       * @param {number} high
+       * @return {number[]}
+       */
+      function traverse(nums, low, high) {
+        if (low === high) return;
+        let mid = parseInt((high + low) / 2);
+        traverse(nums, low, mid);
+        traverse(nums, mid + 1, high);
+
+        // 后序位置，将 nums[low..mid] 和 nums[mid+1..high] 这两个有序数组合并成一个有序数组
+        merge(nums, low, mid, high);
+      }
+
+      // 双指针方式  合并两个有序数组  如果当给nums[p]赋值为temp[i]时证明，其后小的数值为j-mid-1
+      function merge(nums, low, mid, high) {
+        // 优化给temp赋值重新排序后的值
+        for (let i = low; i <= high; i++) {
+          temp[i] = nums[i];
+        }
+
+        // 遍历low-mid，判断后半截符合数据进行技术
+        let end = mid + 1;
+        for (let j = low; j <= mid; j++) {
+          while (end <= high && nums[j] > nums[end] * 2) {
+            end++;
+          }
+          count += end - mid - 1;
+        }
+
+        let i = low,
+          j = mid + 1;
+        for (let p = low; p <= high; p++) {
+          // 如果左边合并完了，p直接赋值右边的
+          if (i === mid + 1) {
+            nums[p] = temp[j++];
+          } else if (j === high + 1) {
+            // 如果右边合并完了，p直接赋值左边的
+            nums[p] = temp[i++];
+          } else if (temp[i] > temp[j]) {
+            // 如果i值大于j值，p赋值j
+            nums[p] = temp[j++];
+          } else {
+            // 如果i值小于j值，p赋值i
+            nums[p] = temp[i++];
+          }
+        }
+      }
+      return count;
+    };
+
+    const nums = [1, 3, 2, 3, 1];
+    console.log(reversePairs(nums));
+    const nums2 = [2, 4, 3, 5, 1];
+    console.log(reversePairs(nums2));
+  </script>
+</html>
