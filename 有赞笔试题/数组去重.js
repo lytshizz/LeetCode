@@ -64,6 +64,11 @@ function unique(arr) {
   return [...otherTypeArr, ...objArr];
 }
 
+console.log(unique([1, '1', 1]));
+console.log(unique([{ a: 1 }, { b: 1 }, { a: 1 }]));
+console.log(unique([{ a: 1, b: 2 }, { b: 1 }, { b: 2, a: 1 }]));
+console.log(unique([[1, { a: 1 }], [2], [3], [1, { a: 1 }]]));
+
 //  只适用于简单数组，不含嵌套对象的情况
 function arrUnique(arr) {
   const set = new Set(arr);
@@ -71,7 +76,7 @@ function arrUnique(arr) {
   console.log(newArr);
 }
 
-// 需要兼容复杂嵌套情况
+// 需要兼容复杂嵌套情况....未完待续
 function arrDeWeightDeep(arr) {
   // 通过set存储已有值
   arr.forEach((item) => {
@@ -83,7 +88,7 @@ function arrDeWeightDeep(arr) {
   console.log(newArr);
 }
 
-arrDeWeight([1, '1', 1]);
-arrDeWeight([{ a: 1 }, { b: 1 }, { a: 1 }]);
-arrDeWeight([{ a: 1, b: 2 }, { b: 1 }, { b: 2, a: 1 }]);
-arrDeWeight([[1, { a: 1 }], [2], [3], [1, { a: 1 }]]);
+// arrDeWeight([1, '1', 1]);
+// arrDeWeight([{ a: 1 }, { b: 1 }, { a: 1 }]);
+// arrDeWeight([{ a: 1, b: 2 }, { b: 1 }, { b: 2, a: 1 }]);
+// arrDeWeight([[1, { a: 1 }], [2], [3], [1, { a: 1 }]]);
