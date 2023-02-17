@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>event loop 事件循环处理机制</title>
+    <script src="./eventLoop.js"></script>
+  </head>
+
+  <!--浏览器输出结果同 node v11.0及以后 执行一个宏任务，就会执行微任务队列中所有微任务。 就与浏览器保持一致了。
+    输出结果如下：
+    start
+    end
+    children1
+    Promise1
+    children2
+    children2-1
+    children3
+    children3-1
+    setTimeout1
+    Promise2
+    setTimeout2
+  -->
+  <body>nihao</body>
+</html>
